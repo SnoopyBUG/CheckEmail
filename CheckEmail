@@ -90,7 +90,7 @@ def monitor_inbox(imap_host, imap_user, imap_pass, interval=60):
     finally:
         mail.logout()
 
-def get_unseen_emails(imap_host, imap_user, imap_pass, num=1):
+def get_unseen_emails(imap_host, imap_user, imap_pass, CONTENT=False, num=1):
     """
     获取未读邮件的主题和内容。
     """
@@ -104,10 +104,19 @@ def get_unseen_emails(imap_host, imap_user, imap_pass, num=1):
     try:
         for email_id in unseen_ids[:num]:
             subject, text_content = fetch_email(mail, email_id)
-            print("未读邮件：")
-            print("Subject: ", subject)
-            print("Content: ", text_content)
+            print("==== 未读邮件 ====")
+
+            print("主题: \n", subject)
+
+            status, msg = mail.fetch(email_id, '(RFC822)')
+            msg = email.message_from_bytes(msg[0][1])
+            print("发件人：\n", msg["From"])
+
+            if CONTENT:
+                print("内容: \n", text_content)
+
             print()
+
             # 标记邮件为已读
             mail.store(email_id, '+FLAGS', '\\Seen')
     finally:
