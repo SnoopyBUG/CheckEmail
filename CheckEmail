@@ -90,7 +90,7 @@ def monitor_inbox(imap_host, imap_user, imap_pass, interval=60):
     finally:
         mail.logout()
 
-def get_unseen_emails(imap_host, imap_user, imap_pass, CONTENT=False, num=1):
+def get_unseen_emails(imap_host, imap_user, imap_pass, CONTENT=True, num=1):
     """
     获取未读邮件的主题和内容。
     """
@@ -98,13 +98,19 @@ def get_unseen_emails(imap_host, imap_user, imap_pass, CONTENT=False, num=1):
     mail.select('inbox')
     status, messages = mail.search(None, 'UNSEEN')
     unseen_ids = messages[0].split()
+
     if len(unseen_ids) == 0:
-        print("没有未读邮件。")
+        print("没有未读邮件哦!")
         return
+    else:
+        print("未读邮件数量: ", len(unseen_ids))
+    
+    k = 0
     try:
         for email_id in unseen_ids[:num]:
+            k += 1
             subject, text_content = fetch_email(mail, email_id)
-            print("==== 未读邮件 ====")
+            print("==== 未读邮件 (%d/%d) ====" % (k, len(unseen_ids)))
 
             print("主题: \n", subject)
 
@@ -124,7 +130,9 @@ def get_unseen_emails(imap_host, imap_user, imap_pass, CONTENT=False, num=1):
 
 
 
-imap_info_qq = ['smtp.qq.com', 'xxx@qq.com', 'password']          # QQ邮箱的password为邮箱授权码，不是登录密码
+
+imap_info_nudt = ['mail.nudt.edu.cn', 'xxx@nudt.edu.cn', 'password']    # 邮箱服务器地址，邮箱账号，邮箱密码
+imap_info_qq =   ['smtp.qq.com',      'xxx@qq.com',      'password']    # QQ邮箱的password为邮箱授权码，不是登录密码
 
 
-get_unseen_emails(*imap_info_qq)
+get_unseen_emails(*imap_info_qq, CONTENT=False, num=-1)
